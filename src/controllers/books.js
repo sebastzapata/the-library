@@ -15,7 +15,7 @@ const getBooksApi = async (req, res) => {
   }
 };
 
-const getBookApi = async (req, res) => {
+const getBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await getBook(bookID);
@@ -26,7 +26,7 @@ const getBookApi = async (req, res) => {
   }
 };
 
-const createBookApi = async (req, res) => {
+const createBookApi = async (req, res, next) => {
   try {
     const book = await createBook(req.body);
     res.status(200).json({ book });
@@ -35,7 +35,7 @@ const createBookApi = async (req, res) => {
   }
 };
 
-const updateBookApi = async (req, res) => {
+const updateBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await updateBook(bookID, req.body);
@@ -46,7 +46,7 @@ const updateBookApi = async (req, res) => {
   }
 };
 
-const deleteBookApi = async (req, res) => {
+const deleteBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await deleteBook(bookID);

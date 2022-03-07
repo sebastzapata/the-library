@@ -4,7 +4,7 @@ const {
   createBook,
   updateBook,
   deleteBook,
-} = require("./services/books");
+} = require("../services/books");
 
 const getBooksApi = async (req, res) => {
   try {

@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
-const router = express.Router();
+const books = require("./routes/books");
 
 app.use(express.json());
 
-app.get();
+app.use("/api/v1/books", books);
+
+module.exports = app;

@@ -9,6 +9,6 @@ const {
 } = require("../controllers/books");
 
 router.route("/").get(getBooksApi).post(createBookApi);
-router.route("/:id").get(getBookApi).patch(updateBookApi).delete(deleteBookApi);
+router.route("/:id").get(getBookApi).put(updateBookApi).delete(deleteBookApi);
 
 module.exports = router;

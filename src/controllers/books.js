@@ -19,7 +19,7 @@ const getBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await getBook(bookID);
-    if (!book) return next("Not Found");
+    if (!book) return res.status(404).send();
     res.status(200).json({ book });
   } catch (error) {
     next(error);
@@ -39,7 +39,6 @@ const updateBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await updateBook(bookID, req.body);
-    if (!book) return next("Not found");
     res.status(200).json({ book });
   } catch (error) {
     next(error);
@@ -50,7 +49,7 @@ const deleteBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await deleteBook(bookID);
-    if (!book) return next("Not found");
+    if (!book) return res.status(404).send();
     res.status(200).json({ book });
   } catch (error) {
     next(error);

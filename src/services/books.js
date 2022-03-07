@@ -20,6 +20,7 @@ const updateBook = (id, { title, author, pages, status }) => {
     id,
     { title, author, pages, status },
     {
+      upsert: true,
       runValidators: true,
       new: true,
     }

@@ -4,10 +4,14 @@ const bookSchema = mongodb.mongoose.Schema({
   title: {
     type: String,
     required: true,
+    lowercase: true,
+    trim: true,
   },
   author: {
     type: String,
     required: true,
+    trim: true,
+    lowercase: true,
   },
   pages: {
     type: Number,
@@ -32,6 +36,6 @@ bookSchema.path("title").validate(async (title) => {
     title,
   });
   return !titleCount;
-}, "Title already exists");
+}, "Title `{VALUE}` already exists");
 
 module.exports = mongodb.mongoose.model("Book", bookSchema);

@@ -1,17 +1,18 @@
 const Book = require("../models/Book");
 
-const getBooks = () => Book.find({});
+const getBooks = () => {
+  const books = Book.find();
+  return books;
+};
 
-const getBook = (id) => Book.findById(id);
+const getBook = (id) => {
+  const book = Book.findById(id);
+  return book;
+};
 
 const createBook = ({ title, author, pages, status }) => {
-  const book = new Book({
-    title,
-    author,
-    pages,
-    status,
-  });
-  return book.save();
+  const book = Book.create({ title, author, pages, status });
+  return book;
 };
 
 const updateBook = (id, { title, author, pages, status }) => {

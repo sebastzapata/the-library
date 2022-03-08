@@ -4,6 +4,7 @@ mongodb.mongoose.connect(db, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 const app = require("./src/app");
 
 app.listen(3000, () => {

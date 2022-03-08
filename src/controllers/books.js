@@ -4,6 +4,7 @@ const {
   createBook,
   updateBook,
   deleteBook,
+  partialUpdateBook,
 } = require("../services/books");
 
 const getBooksApi = async (req, res) => {
@@ -45,6 +46,16 @@ const updateBookApi = async (req, res, next) => {
   }
 };
 
+const partialUpdateBookApi = async (req, res, next) => {
+  try {
+    const { id: bookID } = req.params;
+    const book = await partialUpdateBook(bookID, req.body);
+    res.status(200).json({ book });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
@@ -62,4 +73,5 @@ module.exports = {
   createBookApi,
   updateBookApi,
   deleteBookApi,
+  partialUpdateBookApi,
 };

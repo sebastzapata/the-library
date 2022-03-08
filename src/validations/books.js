@@ -7,4 +7,9 @@ const bookValidationSchema = Joi.object({
   status: Joi.string().valid("LENT", "AVAILABLE", "UNAVAILABLE").required(),
 });
 
-module.exports = bookValidationSchema;
+const patchBookValidationSchema = bookValidationSchema.fork(
+  ["title", "author", "pages", "status"],
+  (field) => field.optional()
+);
+
+module.exports = { bookValidationSchema, patchBookValidationSchema };

@@ -6,9 +6,15 @@ const {
   createBookApi,
   updateBookApi,
   deleteBookApi,
+  partialUpdateBookApi,
 } = require("../controllers/books");
 
 router.route("/").get(getBooksApi).post(createBookApi);
-router.route("/:id").get(getBookApi).put(updateBookApi).delete(deleteBookApi);
+router
+  .route("/:id")
+  .get(getBookApi)
+  .put(updateBookApi)
+  .patch(partialUpdateBookApi)
+  .delete(deleteBookApi);
 
 module.exports = router;

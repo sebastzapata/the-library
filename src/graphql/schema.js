@@ -25,6 +25,7 @@ const typeDefs = `
     type Mutation {
         createBook(input: BookInput): Book
         updateBook(_id: ID, input: BookInput): Book
+        partialUpdateBook(_id: ID, input: patchBookInput): Book
         deleteBook(_id: ID): Book
     }
 
@@ -33,6 +34,13 @@ const typeDefs = `
         author: String!
         pages: Int!
         status: Status!
+    }
+
+    input patchBookInput {
+        title: String
+        author: String
+        pages: Int
+        status: Status
     }
 `;
 

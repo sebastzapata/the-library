@@ -4,6 +4,7 @@ const {
   createBook,
   updateBook,
   deleteBook,
+  partialUpdateBook,
 } = require("../services/books");
 
 const resolvers = {
@@ -27,6 +28,10 @@ const resolvers = {
     },
     async updateBook(_, { _id, input }) {
       const updatedBook = await updateBook(_id, input);
+      return updatedBook;
+    },
+    async partialUpdateBook(_, { _id, input }) {
+      const updatedBook = await partialUpdateBook(_id, input);
       return updatedBook;
     },
     async deleteBook(_, { _id }) {

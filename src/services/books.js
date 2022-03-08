@@ -1,5 +1,8 @@
 const Book = require("../models/Book");
-const bookValidationSchema = require("../validations/books");
+const {
+  bookValidationSchema,
+  patchBookValidationSchema,
+} = require("../validations/books");
 
 const getBooks = () => {
   const books = Book.find();
@@ -44,11 +47,26 @@ const updateBook = (id, { title, author, pages, status }) => {
   return book;
 };
 
-const partialUpdateBook = (id, { fields }) => {};
+const partialUpdateBook = (id, data) => {
+  console.log(data);
+  const validationResult = patchBookValidationSchema.validate(data);
+  if (validationResult.error) return validationResult.error;
+  const book = Book.findByIdAndUpdate(id, data, {
+    new: true,
+  });
+  return book;
+};
 
 const deleteBook = (id) => {
   const book = Book.findByIdAndDelete(id);
   return book;
 };
 
-module.exports = { getBook, getBooks, createBook, updateBook, deleteBook };
+module.exports = {
+  getBook,
+  getBooks,
+  createBook,
+  updateBook,
+  deleteBook,
+  partialUpdateBook,
+};

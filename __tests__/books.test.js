@@ -1,3 +1,5 @@
+const { toInclude } = require("jest-extended");
+expect.extend({ toInclude });
 jest.mock("../src/models/Book");
 
 const {
@@ -61,11 +63,13 @@ describe("createBook service test", () => {
     });
     const empty = createBook({});
 
-    expect(noTitle).toBe("Error");
-    expect(noAuthor).toBe("Error");
-    expect(noPages).toBe("Error");
-    expect(noStatus).toBe("Error");
-    expect(empty).toBe("Error");
+    console.log(noTitle.message);
+
+    expect(noTitle.message).toMatch("is required");
+    expect(noAuthor.message).toMatch("is required");
+    expect(noPages.message).toMatch("is required");
+    expect(noStatus.message).toMatch("is required");
+    expect(empty.message).toMatch("is required");
   });
   it("should fail if pages parameter is less than one", () => {
     const book = createBook({
@@ -74,7 +78,7 @@ describe("createBook service test", () => {
       pages: 0,
       status: "LENT",
     });
-    expect(book).toBe("Error");
+    expect(book.message).toMatch("must be greater than or equal to 1");
   });
   it("should fail if title exists", () => {
     const baseBook = {
@@ -110,6 +114,9 @@ describe("updateBook service test", () => {
   it("should update a book", () => {
     const book = updateBook(1, {
       title: "Updated",
+      author: "Ryuk",
+      pages: 60,
+      status: "LENT",
     });
     expect(book.title).toEqual("Updated");
   });
@@ -120,7 +127,7 @@ describe("updateBook service test", () => {
       pages: 0,
       status: "LENT",
     });
-    expect(book).toBe("Error");
+    expect(book.message).toMatch("must be greater than or equal to 1");
   });
   it("should fail if title changed and already exists", () => {
     const baseBook = {

@@ -47,10 +47,12 @@ const updateBook = (id, { title, author, pages, status }) => {
   return book;
 };
 
-const partialUpdateBook = (id, data) => {
-  console.log(data);
+const partialUpdateBook = async (id, data) => {
   const validationResult = patchBookValidationSchema.validate(data);
   if (validationResult.error) return validationResult.error;
+  const { title } = data;
+  const exists = await Book.findOne({ title: title });
+  if (exists) return { error: `Title ${title} already exists` };
   const book = Book.findByIdAndUpdate(id, data, {
     new: true,
   });

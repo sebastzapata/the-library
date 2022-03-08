@@ -6,6 +6,7 @@ const bookSchema = mongodb.mongoose.Schema({
     required: true,
     lowercase: true,
     trim: true,
+    unique: true,
   },
   author: {
     type: String,

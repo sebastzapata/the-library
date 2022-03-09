@@ -21,4 +21,5 @@ services:
       - mongo
       - redis
     volumes:
-      - .:/usr/src/app
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules

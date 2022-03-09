@@ -1,4 +1,5 @@
 const express = require("express");
+const { healthMonitor } = require("@condor-labs/health-middleware");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 const notFoundMiddleware = require("./middleware/not-found");
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/api/v1/books", books);
 app.use("/graphql", graphqlHTTP({ graphiql: true, schema: graphqlSchema }));
+healthMonitor(app);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

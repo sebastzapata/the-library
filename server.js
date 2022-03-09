@@ -1,12 +1,15 @@
+const MONGODB_URI = "mongodb://mongo/the-library";
 const mongodb = require("@condor-labs/mongodb")();
-const db = "mongodb://127.0.0.1/the-library";
-mongodb.mongoose.connect(db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongodb.mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then((mdb) => console.log("DB is connected to", mdb.connection.host))
+  .catch((error) => console.log(error));
 
 const app = require("./src/app");
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
+app.listen(5000, () => {
+  console.log("Server listening on port 5000");
 });

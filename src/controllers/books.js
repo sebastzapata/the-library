@@ -1,13 +1,6 @@
-const {
-  getBooks,
-  getBook,
-  createBook,
-  updateBook,
-  deleteBook,
-  partialUpdateBook,
-} = require("../services/books");
+const { getBooks, getBook, createBook, updateBook, deleteBook, partialUpdateBook } = require('../services/books');
 
-const getBooksApi = async (req, res) => {
+const getBooksApi = async (req, res, next) => {
   try {
     const books = await getBooks();
     res.status(200).json({ books });
@@ -20,7 +13,9 @@ const getBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await getBook(bookID);
-    if (!book) return res.status(404).send();
+    if (!book) {
+      return res.status(404).send();
+    }
     res.status(200).json({ book });
   } catch (error) {
     next(error);
@@ -60,7 +55,9 @@ const deleteBookApi = async (req, res, next) => {
   try {
     const { id: bookID } = req.params;
     const book = await deleteBook(bookID);
-    if (!book) return res.status(404).send();
+    if (!book) {
+      return res.status(404).send();
+    }
     res.status(200).json({ book });
   } catch (error) {
     next(error);

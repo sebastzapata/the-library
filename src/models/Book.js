@@ -1,4 +1,4 @@
-const mongodb = require("@condor-labs/mongodb")();
+const mongodb = require('@condor-labs/mongodb')();
 
 const bookSchema = mongodb.mongoose.Schema({
   title: {
@@ -17,14 +17,14 @@ const bookSchema = mongodb.mongoose.Schema({
   pages: {
     type: Number,
     required: true,
-    min: [1, "Books must have at least one page"],
+    min: [1, 'Books must have at least one page'],
   },
   status: {
     type: String,
     required: true,
     enum: {
-      values: ["LENT", "AVAILABLE", "UNAVAILABLE"],
-      message: "{VALUE} is not supported",
+      values: ['LENT', 'AVAILABLE', 'UNAVAILABLE'],
+      message: '{VALUE} is not supported',
     },
   },
 });
@@ -32,11 +32,11 @@ const bookSchema = mongodb.mongoose.Schema({
 /**
  * Validates unique title
  */
-bookSchema.path("title").validate(async (title) => {
+bookSchema.path('title').validate(async (title) => {
   const titleCount = await mongodb.mongoose.models.Book.countDocuments({
     title,
   });
   return !titleCount;
-}, "Title `{VALUE}` already exists");
+}, 'Title `{VALUE}` already exists');
 
-module.exports = mongodb.mongoose.model("Book", bookSchema);
+module.exports = mongodb.mongoose.model('Book', bookSchema);

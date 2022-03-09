@@ -1,16 +1,9 @@
-const {
-  getBooks,
-  getBook,
-  createBook,
-  updateBook,
-  deleteBook,
-  partialUpdateBook,
-} = require("../services/books");
+const { getBooks, getBook, createBook, updateBook, deleteBook, partialUpdateBook } = require('../services/books');
 
 const resolvers = {
   Query: {
     hello() {
-      return "Hello world with graphql";
+      return 'Hello world with graphql';
     },
     async Books() {
       const books = await getBooks();

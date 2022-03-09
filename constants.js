@@ -1,8 +1,8 @@
 module.exports = {
   settings: {
-    prefix: "LIB",
-    host: "redis",
+    prefix: 'LIB',
+    host: 'redis',
     port: 6379,
-    password: "secret",
+    password: 'secret',
   },
 };

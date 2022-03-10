@@ -1,61 +1,99 @@
-const { toInclude } = require('jest-extended');
-expect.extend({ toInclude });
-jest.mock('../src/models/Book');
-
 const { getBooks, getBook, createBook, updateBook, deleteBook } = require('../src/services/books');
+jest.mock('../src/models/Book');
+const mockModel = require('../src/models/Book');
 
-const testBook = {
-  title: 'Death Note',
-  author: 'Ryuk',
-  pages: 60,
-  status: 'LENT',
-};
+jest.mock('util', () => ({
+  promisify: jest.fn(),
+}));
+const util = require('util');
+
+const redisMock = require('@condor-labs/redis');
+jest.mock('@condor-labs/redis', () => () => ({
+  getClient: () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  }),
+}));
+console.log(redisMock);
 
 describe('getBooks service test', () => {
-  it('should return an array of books', () => {
-    const books = getBooks();
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return an array of books', async () => {
+    const spy = jest.spyOn(mockModel, 'find');
+    const books = await getBooks();
     expect(Array.isArray(books)).toBe(true);
+    expect(books[0].title).toEqual('death note');
+    expect(books[1].title).toEqual('book of eli');
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('getBook service test', () => {
-  it('should return a book', () => {
-    const book = getBook(1);
-    expect(book).toMatchObject(testBook);
+  afterEach(() => {
+    jest.clearAllMocks();
   });
-  it('should 404', () => {
-    const book = getBook(2);
+
+  it('should return a book', async () => {
+    const spy = jest.spyOn(mockModel, 'findById');
+    util.promisify.mockReturnValue(() => null);
+    const book = await getBook(1);
+    expect(book.title).toEqual('death note');
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(1);
+  });
+  it('should 404', async () => {
+    const spy = jest.spyOn(mockModel, 'findById');
+    const book = await getBook(2);
     expect(book).toBe('Not Found');
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(2);
   });
 });
 
 describe('createBook service test', () => {
-  it('should create a book', () => {
-    const book = createBook(testBook);
-    expect(book).toMatchObject(testBook);
+  afterEach(() => {
+    jest.clearAllMocks();
   });
-  it('should fail if parameters are missing', () => {
-    const noTitle = createBook({
+
+  it('should create a book', async () => {
+    const spy = jest.spyOn(mockModel, 'create');
+    const newBook = {
+      title: 'new book',
+      author: 'new author',
+      pages: 10,
+      status: 'AVAILABLE',
+    };
+    const book = await createBook(newBook);
+    expect(book).toMatchObject(newBook);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(newBook);
+  });
+  it('should fail if parameters are missing', async () => {
+    const noTitle = await createBook({
       author: 'Ryuk',
       pages: 60,
       status: 'LENT',
     });
-    const noAuthor = createBook({
+    const noAuthor = await createBook({
       title: 'Death Note',
       pages: 60,
       status: 'LENT',
     });
-    const noPages = createBook({
+    const noPages = await createBook({
       title: 'Death Note',
       author: 'Ryuk',
       status: 'LENT',
     });
-    const noStatus = createBook({
+    const noStatus = await createBook({
       title: 'Death Note',
       author: 'Ryuk',
       pages: 60,
     });
-    const empty = createBook({});
+    const empty = await createBook({});
 
     expect(noTitle.message).toMatch('is required');
     expect(noAuthor.message).toMatch('is required');
@@ -63,8 +101,8 @@ describe('createBook service test', () => {
     expect(noStatus.message).toMatch('is required');
     expect(empty.message).toMatch('is required');
   });
-  it('should fail if pages parameter is less than one', () => {
-    const book = createBook({
+  it('should fail if pages parameter is less than one', async () => {
+    const book = await createBook({
       title: 'Death Note',
       author: 'Ryuk',
       pages: 0,
@@ -72,48 +110,58 @@ describe('createBook service test', () => {
     });
     expect(book.message).toMatch('must be greater than or equal to 1');
   });
-  it('should fail if title exists', () => {
+  it('should fail if title exists', async () => {
     const baseBook = {
       author: 'Ryuk',
       pages: 60,
       status: 'LENT',
     };
 
-    const lowercase = createBook({
-      title: 'title test',
+    const lowercase = await createBook({
+      title: 'death note',
       ...baseBook,
     });
-    const uppercase = createBook({
-      title: 'TITLE TEST',
+    const uppercase = await createBook({
+      title: 'DEATH NOTE',
       ...baseBook,
     });
-    const capitalize = createBook({
-      title: 'Title Test',
+    const capitalize = await createBook({
+      title: 'Death Note',
       ...baseBook,
     });
-    const randomcase = createBook({
-      title: 'TiTlE TeSt',
+    const randomcase = await createBook({
+      title: 'dEaTh NoTe',
       ...baseBook,
     });
-    expect(lowercase).toBe('Error');
-    expect(uppercase).toBe('Error');
-    expect(capitalize).toBe('Error');
-    expect(randomcase).toBe('Error');
+    expect(lowercase).toBe('Title death note already exists');
+    expect(uppercase).toBe('Title DEATH NOTE already exists');
+    expect(capitalize).toBe('Title Death Note already exists');
+    expect(randomcase).toBe('Title dEaTh NoTe already exists');
   });
 });
 
 describe('updateBook service test', () => {
-  it('should update a book', () => {
-    const book = updateBook(1, {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should update a book', async () => {
+    const spy = jest.spyOn(mockModel, 'findByIdAndUpdate');
+    const updateOptions = { new: true, upsert: true, runValidators: true, overwrite: true };
+    const updatedBook = {
       title: 'Updated',
       author: 'Ryuk',
       pages: 60,
       status: 'LENT',
-    });
+    };
+
+    const book = await updateBook(1, updatedBook);
     expect(book.title).toEqual('Updated');
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(1, updatedBook, updateOptions);
   });
-  it('should fail if pages parameter is less than one', () => {
-    const book = updateBook(1, {
+  it('should fail if pages parameter is less than one', async () => {
+    const book = await updateBook(1, {
       title: 'Updated',
       author: 'Ryuk',
       pages: 0,
@@ -121,26 +169,26 @@ describe('updateBook service test', () => {
     });
     expect(book.message).toMatch('must be greater than or equal to 1');
   });
-  it('should fail if title changed and already exists', () => {
+  it('should fail if title changed and already exists', async () => {
     const baseBook = {
       author: 'Ryuk',
       pages: 60,
       status: 'LENT',
     };
 
-    const lowercase = updateBook(1, {
+    const lowercase = await updateBook(1, {
       title: 'title test',
       ...baseBook,
     });
-    const uppercase = updateBook(1, {
+    const uppercase = await updateBook(1, {
       title: 'TITLE TEST',
       ...baseBook,
     });
-    const capitalize = updateBook(1, {
+    const capitalize = await updateBook(1, {
       title: 'Title Test',
       ...baseBook,
     });
-    const randomcase = updateBook(1, {
+    const randomcase = await updateBook(1, {
       title: 'TiTlE TeSt',
       ...baseBook,
     });
@@ -152,12 +200,28 @@ describe('updateBook service test', () => {
 });
 
 describe('deleteBook service test', () => {
-  it('should delete a book', () => {
-    const book = deleteBook(1, testBook);
-    expect(book).toMatchObject(testBook);
+  afterEach(() => {
+    jest.clearAllMocks();
   });
-  it('should 404', () => {
-    const book = deleteBook(2, testBook);
+
+  it('should delete a book', async () => {
+    const spy = jest.spyOn(mockModel, 'findByIdAndDelete');
+    const deletedBook = {
+      title: 'death note',
+      author: 'ryuk',
+      pages: 60,
+      status: 'LENT',
+    };
+    const book = await deleteBook(1);
+    expect(book).toMatchObject(deletedBook);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(1);
+  });
+  it('should 404', async () => {
+    const spy = jest.spyOn(mockModel, 'findByIdAndDelete');
+    const book = await deleteBook(2);
     expect(book).toBe('Not Found');
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(2);
   });
 });

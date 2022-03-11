@@ -1,0 +1,40 @@
+name: CICD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.14.x
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+      - run: docker --version
+      - run: docker-compose --version
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+      - name: Deploy to ec2 aws
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_KEY }}
+          script: |
+            rm -rf /home/ubuntu/*
+            cd /home/ubuntu/
+            git clone git@github.com:sebastzapata/the-library.git
+            cd /home/ubuntu/the-library/
+            sudo docker-compose up -d

@@ -12,5 +12,5 @@ mongodb.mongoose
 const app = require('./src/app');
 
 app.listen(5000, () => {
-  logger.log('Server listening on port 5000');
+  logger.log('Server started ...');
 });

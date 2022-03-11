@@ -7,7 +7,7 @@ jest.mock('util', () => ({
 }));
 const util = require('util');
 
-const redisMock = require('@condor-labs/redis');
+require('@condor-labs/redis');
 jest.mock('@condor-labs/redis', () => () => ({
   getClient: () => ({
     get: jest.fn(),
@@ -15,7 +15,6 @@ jest.mock('@condor-labs/redis', () => () => ({
     del: jest.fn(),
   }),
 }));
-console.log(redisMock);
 
 describe('getBooks service test', () => {
   afterAll(() => {

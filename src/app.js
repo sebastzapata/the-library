@@ -10,7 +10,7 @@ const graphqlSchema = require('./graphql/schema');
 
 app.use(express.json());
 
-app.use('/', (req, res) => res.send('The Library API'));
+app.get('/', (req, res) => res.send('The Library API'));
 app.use('/api/v1/books', books);
 app.use('/graphql', graphqlHTTP({ graphiql: true, schema: graphqlSchema }));
 healthMonitor(app);

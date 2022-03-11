@@ -33,8 +33,8 @@ jobs:
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_KEY }}
           script: |
-            rm -rf /home/ubuntu/*
+            sudo rm -rf /home/ubuntu/*
             cd /home/ubuntu/
-            git clone git@github.com:sebastzapata/the-library.git
+            git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/sebastzapata/the-library.git
             cd /home/ubuntu/the-library/
             sudo docker-compose up -d

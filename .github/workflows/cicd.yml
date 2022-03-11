@@ -37,4 +37,4 @@ jobs:
             cd /home/ubuntu/
             git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/sebastzapata/the-library.git
             cd /home/ubuntu/the-library/
-            sudo docker-compose up -d
+            sudo docker-compose up --build -d

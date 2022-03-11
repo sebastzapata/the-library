@@ -1,4 +1,4 @@
-name: Test Nodejs - Deploy to AWS EC2 - Docker compose
+name: Test Nodejs
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.14.x
-          cache: "npm"
+          cache: 'npm'
       - run: npm ci
       - run: npm test
       - run: docker --version

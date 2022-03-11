@@ -138,6 +138,17 @@ describe('createBook service test', () => {
     expect(capitalize).toBe('Title Death Note already exists');
     expect(randomcase).toBe('Title dEaTh NoTe already exists');
   });
+
+  it('should fail if status is wrong', async () => {
+    const newBook = {
+      title: 'new book',
+      author: 'new author',
+      pages: 10,
+      status: 'WRONG',
+    };
+    const book = await createBook(newBook);
+    expect(book.message).toMatch('must be one of [LENT, AVAILABLE, UNAVAILABLE]');
+  });
 });
 
 describe('updateBook service test', () => {
@@ -196,6 +207,16 @@ describe('updateBook service test', () => {
     expect(uppercase).toBe('Error');
     expect(capitalize).toBe('Error');
     expect(randomcase).toBe('Error');
+  });
+  it('should fail if status is wrong', async () => {
+    const updatedBook = {
+      title: 'new book',
+      author: 'new author',
+      pages: 10,
+      status: 'WRONG',
+    };
+    const book = await updateBook(1, updatedBook);
+    expect(book.message).toMatch('must be one of [LENT, AVAILABLE, UNAVAILABLE]');
   });
 });
 
